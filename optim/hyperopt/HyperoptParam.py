@@ -20,7 +20,7 @@ class HyperoptParam:
         'lambda_bias': hp.quniform('lambda_bias', 0, 3, 0.1),
         'num_round': hp.quniform('num_round', 10, 100, 10),
         'num_boost_round': 25,
-        'nthread': 14,
+        'nthread': 1,
         'silent': 1,
         'seed': 42,
         'max_evals': 1,
@@ -40,7 +40,7 @@ class HyperoptParam:
         'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1, 0.1),
         'num_round': hp.quniform('num_round', 10, 100, 10),
         'num_boost_round': 25,
-        'nthread': 14,
+        'nthread': 1,
         'silent': 1,
         'seed': 42,
         'max_evals': 1,
@@ -80,6 +80,8 @@ class HyperoptParam:
         'C': hp.loguniform('C', np.log(0.001), np.log(10)),
         'random_state': 42,
         'max_evals': 1,
+        'cv': 3,
+        'eval_metric': 'logloss' #auc
     }
 
     #######################################

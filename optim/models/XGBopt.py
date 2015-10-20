@@ -55,11 +55,6 @@ class XGBopt:
         assert 'booster' in params_arg
         assert 'objective' in params_arg
         assert 'eta' in params_arg
-        assert 'gamma' in params_arg
-        assert 'min_child_weight' in params_arg
-        assert 'max_depth' in params_arg
-        assert 'subsample' in params_arg
-        assert 'colsample_bytree' in params_arg
         assert 'num_round' in params_arg
         assert 'nthread' in params_arg
         assert 'silent' in params_arg
