@@ -49,7 +49,7 @@ class XGBopt:
 
     @staticmethod
     def assert_params_ok(params_arg):
-        # sklearn params
+        # models params
         assert 'cv' in params_arg
         # xgb params
         assert 'booster' in params_arg
@@ -69,3 +69,4 @@ class XGBopt:
         assert 'max_evals' in params_arg
         # metric params
         assert 'eval_metric' in params_arg
+        assert params_arg['eval_metric'] in ['auc', 'logloss']

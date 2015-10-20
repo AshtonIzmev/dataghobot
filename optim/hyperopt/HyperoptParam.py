@@ -23,7 +23,7 @@ class HyperoptParam:
         'nthread': 14,
         'silent': 1,
         'seed': 42,
-        'max_evals': 20,
+        'max_evals': 1,
         'eval_metric': 'auc', #logloss
         'cv': 3
     }
@@ -43,8 +43,8 @@ class HyperoptParam:
         'nthread': 14,
         'silent': 1,
         'seed': 42,
-        'max_evals': 20,
-        'eval_metric': 'auc', #logloss
+        'max_evals': 1,
+        'eval_metric': 'logloss', #auc
         'cv': 3
     }
 
@@ -58,8 +58,9 @@ class HyperoptParam:
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 20,
-        'cv': 3
+        'max_evals': 1,
+        'cv': 3,
+        'eval_metric': 'logloss' #auc
     }
 
     param_space_reg_skl_etr = {
@@ -69,15 +70,16 @@ class HyperoptParam:
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 20,
-        'cv': 3
+        'max_evals': 1,
+        'cv': 3,
+        'eval_metric': 'logloss' #auc
     }
 
     param_space_clf_skl_lr = {
         'task': 'clf_skl_lr',
         'C': hp.loguniform('C', np.log(0.001), np.log(10)),
         'random_state': 42,
-        'max_evals': 20,
+        'max_evals': 1,
     }
 
     #######################################
@@ -93,6 +95,6 @@ class HyperoptParam:
         'hidden_activation': hp.choice('hidden_activation', ['relu', 'prelu']),
         'batch_size': hp.choice('batch_size', [16, 32, 64, 128]),
         'nb_epoch': hp.choice('nb_epoch', [10, 20, 30, 40]),
-        'max_evals': 20,
+        'max_evals': 1,
     }
 
