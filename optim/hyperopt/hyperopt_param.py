@@ -7,11 +7,6 @@ class HyperoptParam:
     def __init__(self):
         return
 
-    # sklearn
-    libfm_min_iter = 10
-    libfm_max_iter = 500
-    iter_step = 10
-
     #######################################
     # XGBoost
     #######################################
@@ -24,10 +19,11 @@ class HyperoptParam:
         'alpha': hp.quniform('alpha', 0, 0.5, 0.005),
         'lambda_bias': hp.quniform('lambda_bias', 0, 3, 0.1),
         'num_round': hp.quniform('num_round', 10, 100, 10),
+        'num_boost_round': 25,
         'nthread': 14,
         'silent': 1,
         'seed': 42,
-        'max_evals': 200,
+        'max_evals': 20,
         'eval_metric': 'auc', #logloss
         'cv': 3
     }
@@ -43,10 +39,11 @@ class HyperoptParam:
         'subsample': hp.quniform('subsample', 0.5, 1, 0.1),
         'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1, 0.1),
         'num_round': hp.quniform('num_round', 10, 100, 10),
+        'num_boost_round': 25,
         'nthread': 14,
         'silent': 1,
         'seed': 42,
-        'max_evals': 200,
+        'max_evals': 20,
         'eval_metric': 'auc', #logloss
         'cv': 3
     }
@@ -56,27 +53,31 @@ class HyperoptParam:
     #######################################
     param_space_reg_skl_rf = {
         'task': 'reg_skl_rf',
+        'n_estimators': hp.randint('n_estimators', 100),
         'max_features': hp.quniform('max_features', 0.05, 1.0, 0.05),
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 200,
+        'max_evals': 20,
+        'cv': 3
     }
 
     param_space_reg_skl_etr = {
         'task': 'reg_skl_etr',
+        'n_estimators': hp.randint('n_estimators', 100),
         'max_features': hp.quniform('max_features', 0.05, 1.0, 0.05),
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 200,
+        'max_evals': 20,
+        'cv': 3
     }
 
     param_space_clf_skl_lr = {
         'task': 'clf_skl_lr',
         'C': hp.loguniform('C', np.log(0.001), np.log(10)),
         'random_state': 42,
-        'max_evals': 200,
+        'max_evals': 20,
     }
 
     #######################################
@@ -92,6 +93,6 @@ class HyperoptParam:
         'hidden_activation': hp.choice('hidden_activation', ['relu', 'prelu']),
         'batch_size': hp.choice('batch_size', [16, 32, 64, 128]),
         'nb_epoch': hp.choice('nb_epoch', [10, 20, 30, 40]),
-        'max_evals': 200,
+        'max_evals': 20,
     }
 

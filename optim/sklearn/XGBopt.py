@@ -26,25 +26,9 @@ class XGBopt:
             y_test = self.y_data.iloc[test_index]
             dtrain = xgb.DMatrix(x_train.rename(columns=straln), label=y_train)
             dtest = xgb.DMatrix(x_test.rename(columns=straln), label=y_test)
-            param = {
-                'booster': params_arg['booster'],
-                'objective': params_arg['objective'],
-                'eta': params_arg['eta'],
-                'gamma': params_arg['gamma'],
-                'min_child_weight': params_arg['min_child_weight'],
-                'max_depth': params_arg['max_depth'],
-                'subsample': params_arg['subsample'],
-                'colsample_bytree': params_arg['colsample_bytree'],
-                'num_round': params_arg['num_round'],
-                'nthread': params_arg['nthread'],
-                'silent': params_arg['silent'],
-                'seed': params_arg['seed']
-            }
-            plst = param.items()
+            plst = params_arg.items()
             plst += [('eval_metric', params_arg['eval_metric'])]
-
             evallist = [(dtest, 'eval'), (dtrain, 'train')]
-
             bst = xgb.train(plst, dtrain, 25, evallist, verbose_eval=False)
             preds_probas[test_index] = bst.predict(dtest)
         return preds_probas
@@ -56,7 +40,7 @@ class XGBopt:
     def objective_xgb(self, params_arg):
         auc_score = self.get_score_xgb(params_arg)
         if self.verbose:
-            print "\tScore {0}".format(auc_score)
+            print "\tScore {0}\tParams{1}".format(auc_score, params_arg)
         return {'loss': -auc_score, 'status': STATUS_OK}
 
     def run_hp_xgb(self, params_arg):
@@ -80,6 +64,7 @@ class XGBopt:
         assert 'nthread' in params_arg
         assert 'silent' in params_arg
         assert 'seed' in params_arg
+        assert 'num_boost_round' in params_arg
         # hyperopt params
         assert 'max_evals' in params_arg
         # metric params
