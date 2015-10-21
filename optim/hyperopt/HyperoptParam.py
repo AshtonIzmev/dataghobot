@@ -58,9 +58,9 @@ class HyperoptParam:
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 1,
+        'max_evals': 5,
         'cv': 3,
-        'eval_metric': 'logloss' #auc
+        'eval_metric': 'logloss' #logloss
     }
 
     param_space_reg_skl_etr = {
@@ -81,7 +81,7 @@ class HyperoptParam:
         'random_state': 42,
         'max_evals': 1,
         'cv': 3,
-        'eval_metric': 'logloss' #auc
+        'eval_metric': 'auc' #auc
     }
 
     #######################################
@@ -100,3 +100,17 @@ class HyperoptParam:
         'max_evals': 1,
     }
 
+    #######################################
+    # VW
+    #######################################
+    param_space_classification_vw = {
+        'loss_function': 'logistic',
+        'passes': 5,
+        'l1': hp.quniform('l1', 0.000000001, 0.00000001, 0.000000001),
+        'l2': hp.quniform('l2', 0.000000001, 0.00000001, 0.000000001),
+        'decay_learning_rate': hp.quniform('decay_learning_rate', 0.5, 1.5, 0.1),
+        'learning_rate': hp.quniform('learning_rate', 0.2, 0.8, 0.1),
+        'max_evals': 5,
+        'cv': 3,
+        'eval_metric': 'auc' # or logloss
+    }
