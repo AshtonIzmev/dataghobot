@@ -9,6 +9,10 @@ import numpy as np
 
 class Sklearnopt:
 
+    auc_label = 'auc'
+    logloss_label = 'logloss'
+    score = np.iinfo(np.int32).max
+
     def __init__(self, x_data, y_data, verbose=False,):
         self.verbose = verbose
         self.x_data = x_data
@@ -29,9 +33,9 @@ class Sklearnopt:
 
     def get_hp_score(self, clf, params_arg):
         (preds_probas_rf, _) = self.cross_val_pred_skl(clf, params_arg['cv'])
-        if params_arg['eval_metric'] == 'auc':
-            return metrics.roc_auc_score(self.y_data, preds_probas_rf[:, 1])
-        if params_arg['eval_metric'] == 'logloss':
+        if params_arg['eval_metric'] == Sklearnopt.auc_label:
+            return -metrics.roc_auc_score(self.y_data, preds_probas_rf[:, 1])
+        if params_arg['eval_metric'] == Sklearnopt.logloss_label:
             return metrics.log_loss(self.y_data, preds_probas_rf[:, 1])
         raise Exception('Eval metric error : auc or logloss')
 
@@ -42,18 +46,22 @@ class Sklearnopt:
                                      max_depth=1+params_arg['max_depth'],
                                      n_jobs=params_arg['n_jobs'])
         score = self.get_hp_score(clf, params_arg)
+        if score < self.score:
+            self.score = score
         if self.verbose:
             print "\tScore {0}\tParams{1}".format(score, params_arg)
-        return {'loss': -score, 'status': STATUS_OK}
+        return {'loss': score, 'status': STATUS_OK}
 
     def objective_hp_lr(self, params_arg):
         scaler_lr = Pipeline([
             ('scr', StandardScaler()),
             ('lr', LogisticRegression(C=params_arg['C']))])
         score = self.get_hp_score(scaler_lr, params_arg)
+        if score < self.score:
+            self.score = score
         if self.verbose:
             print "\tScore {0}\tParams{1}".format(score, params_arg)
-        return {'loss': -score, 'status': STATUS_OK}
+        return {'loss': score, 'status': STATUS_OK}
 
     def run_hp_rf(self, params_arg):
         self.assert_params_rf_ok(params_arg)
@@ -77,7 +85,7 @@ class Sklearnopt:
         assert 'max_evals' in params_arg
         # metric params
         assert 'eval_metric' in params_arg
-        assert params_arg['eval_metric'] in ['auc', 'logloss']
+        assert params_arg['eval_metric'] in [Sklearnopt.auc_label, Sklearnopt.logloss_label]
 
     @staticmethod
     def assert_params_lr_ok(params_arg):
@@ -89,6 +97,6 @@ class Sklearnopt:
         assert 'max_evals' in params_arg
         # metric params
         assert 'eval_metric' in params_arg
-        assert params_arg['eval_metric'] in ['auc', 'logloss']
+        assert params_arg['eval_metric'] in [Sklearnopt.auc_label, Sklearnopt.logloss_label]
 
 

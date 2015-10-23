@@ -12,6 +12,8 @@ class VWopt:
     epsilon = 1e-15
     scaler = MinMaxScaler(feature_range=(epsilon, 1-epsilon))
 
+    score = np.iinfo(np.int32).max
+
     def __init__(self, x_data, y_data, verbose=False,):
         self.verbose = verbose
         self.x_data = x_data
@@ -67,16 +69,18 @@ class VWopt:
     def get_score_vw(self, params_arg):
         preds_vw = self.cross_val_pred_vw(params_arg)
         if params_arg['eval_metric'] == VWopt.auc_label:
-            return metrics.roc_auc_score(self.y_data, preds_vw)
+            return -metrics.roc_auc_score(self.y_data, preds_vw)
         if params_arg['eval_metric'] == VWopt.logloss_label:
             return metrics.log_loss(self.y_data, preds_vw)
         raise Exception('Eval metric error : auc or logloss')
 
     def objective_vw(self, params_arg):
         score = self.get_score_vw(params_arg)
+        if score < self.score:
+            self.score = score
         if self.verbose:
             print "\tScore {0}\tParams{1}".format(score, params_arg)
-        return {'loss': -score, 'status': STATUS_OK}
+        return {'loss': score, 'status': STATUS_OK}
 
     def run_hp_vw(self, params_arg):
         self.assert_params_ok(params_arg)

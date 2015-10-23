@@ -6,4 +6,4 @@ It may be possible to automate some datascience parts ?
 * Grid search
 * Blending
 
-This is a modest try to do so
+This is a modest try to do so begining with hyperoptimisation of datascience models

@@ -39,13 +39,13 @@ class HyperoptParam:
         'subsample': hp.quniform('subsample', 0.5, 1, 0.1),
         'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1, 0.1),
         'num_round': hp.quniform('num_round', 10, 100, 10),
-        'num_boost_round': 25,
+        'num_boost_round': 40,
         'nthread': 1,
         'silent': 1,
         'seed': 42,
         'max_evals': 1,
-        'eval_metric': 'logloss', #auc
-        'cv': 3
+        'eval_metric': 'auc', #logloss
+        'cv': 5
     }
 
     #######################################
@@ -60,7 +60,7 @@ class HyperoptParam:
         'random_state': 42,
         'max_evals': 5,
         'cv': 3,
-        'eval_metric': 'logloss' #logloss
+        'eval_metric': 'auc' #logloss
     }
 
     param_space_reg_skl_etr = {

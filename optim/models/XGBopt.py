@@ -10,6 +10,8 @@ class XGBopt:
     auc_label = 'auc'
     logloss_label = 'logloss'
 
+    score = np.iinfo(np.int32).max
+
     def __init__(self, x_data, y_data, verbose=False,):
         self.verbose = verbose
         self.x_data = x_data
@@ -39,16 +41,18 @@ class XGBopt:
     def get_score_xgb(self, params_arg):
         preds_probas_rf = self.cross_val_pred_xgb(params_arg)
         if params_arg['eval_metric'] == XGBopt.auc_label:
-            return metrics.roc_auc_score(self.y_data, preds_probas_rf)
+            return -metrics.roc_auc_score(self.y_data, preds_probas_rf)
         if params_arg['eval_metric'] == XGBopt.logloss_label:
             return metrics.log_loss(self.y_data, preds_probas_rf)
         raise Exception('Eval metric error : auc or logloss')
 
     def objective_xgb(self, params_arg):
         score = self.get_score_xgb(params_arg)
+        if score < self.score:
+            self.score = score
         if self.verbose:
             print "\tScore {0}\tParams{1}".format(score, params_arg)
-        return {'loss': -score, 'status': STATUS_OK}
+        return {'loss': score, 'status': STATUS_OK}
 
     def run_hp_xgb(self, params_arg):
         self.assert_params_ok(params_arg)
