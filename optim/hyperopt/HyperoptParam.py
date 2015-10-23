@@ -86,9 +86,11 @@ class HyperoptParam:
 
     #######################################
     # Keras
+    # http://keras.io/objectives/
     #######################################
     param_space_reg_keras_dnn = {
         'task': 'reg_keras_dnn',
+        'loss_function': 'binary_crossentropy',
         'batch_norm': hp.choice('batch_norm', [True, False]),
         'hidden_units': hp.choice('hidden_units', [64, 128, 256, 512]),
         'hidden_layers': hp.choice('hidden_layers', [1, 2, 3, 4]),
@@ -98,6 +100,9 @@ class HyperoptParam:
         'batch_size': hp.choice('batch_size', [16, 32, 64, 128]),
         'nb_epoch': hp.choice('nb_epoch', [10, 20, 30, 40]),
         'max_evals': 1,
+        'cv': 3,
+        'verbose': 0, # 0/1 choice
+        'eval_metric': 'auc' # or logloss
     }
 
     #######################################
