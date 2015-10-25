@@ -5,7 +5,7 @@ import re
 from hyperopt import fmin, tpe, STATUS_OK
 
 
-class XGBopt:
+class XGBOpt:
 
     auc_label = 'auc'
     logloss_label = 'logloss'
@@ -40,9 +40,9 @@ class XGBopt:
 
     def get_score_xgb(self, params_arg):
         preds_probas_rf = self.cross_val_pred_xgb(params_arg)
-        if params_arg['eval_metric'] == XGBopt.auc_label:
+        if params_arg['eval_metric'] == XGBOpt.auc_label:
             return -metrics.roc_auc_score(self.y_data, preds_probas_rf)
-        if params_arg['eval_metric'] == XGBopt.logloss_label:
+        if params_arg['eval_metric'] == XGBOpt.logloss_label:
             return metrics.log_loss(self.y_data, preds_probas_rf)
         raise Exception('Eval metric error : auc or logloss')
 
@@ -75,4 +75,4 @@ class XGBopt:
         assert 'max_evals' in params_arg
         # metric params
         assert 'eval_metric' in params_arg
-        assert params_arg['eval_metric'] in [XGBopt.auc_label, XGBopt.logloss_label]
+        assert params_arg['eval_metric'] in [XGBOpt.auc_label, XGBOpt.logloss_label]

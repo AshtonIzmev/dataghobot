@@ -8,7 +8,7 @@ from keras.layers.advanced_activations import PReLU
 from sklearn.preprocessing import StandardScaler
 
 
-class Kerasopt:
+class KerasOpt:
 
     auc_label = 'auc'
     logloss_label = 'logloss'
@@ -53,7 +53,7 @@ class Kerasopt:
         for train_index, test_index in kf:
             x_train, x_test = self.x_data.iloc[train_index], self.x_data.iloc[test_index]
             y_train = self.y_data.iloc[train_index]
-            model = Kerasopt.build_keras_model(params_arg, x_train.shape[1])
+            model = KerasOpt.build_keras_model(params_arg, x_train.shape[1])
             x_train_scale = self.scaler.fit_transform(x_train)
             x_test_scale = self.scaler.transform(x_test)
             model.fit(x_train_scale, y_train+1, nb_epoch=params_arg['nb_epoch'],
@@ -63,9 +63,9 @@ class Kerasopt:
 
     def get_score_keras(self, params_arg):
         preds_probas = self.cross_val_pred_keras(params_arg)
-        if params_arg['eval_metric'] == Kerasopt.auc_label:
+        if params_arg['eval_metric'] == KerasOpt.auc_label:
             return -metrics.roc_auc_score(self.y_data, preds_probas)
-        if params_arg['eval_metric'] == Kerasopt.logloss_label:
+        if params_arg['eval_metric'] == KerasOpt.logloss_label:
             return metrics.log_loss(self.y_data, preds_probas)
         raise Exception('Eval metric error : auc or logloss')
 
@@ -100,4 +100,4 @@ class Kerasopt:
         assert 'max_evals' in params_arg
         # metric params
         assert 'eval_metric' in params_arg
-        assert params_arg['eval_metric'] in [Kerasopt.auc_label, Kerasopt.logloss_label]
+        assert params_arg['eval_metric'] in [KerasOpt.auc_label, KerasOpt.logloss_label]

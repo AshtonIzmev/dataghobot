@@ -53,6 +53,7 @@ class HyperoptParam:
     #######################################
     param_space_reg_skl_rf = {
         'task': 'reg_skl_rf',
+        'type': 'random_forest',
         'n_estimators': hp.randint('n_estimators', 100),
         'max_features': hp.quniform('max_features', 0.05, 1.0, 0.05),
         'n_jobs': -1,
@@ -77,6 +78,7 @@ class HyperoptParam:
 
     param_space_clf_skl_lr = {
         'task': 'clf_skl_lr',
+        'type': 'logistic_regression',
         'C': hp.loguniform('C', np.log(0.001), np.log(10)),
         'random_state': 42,
         'max_evals': 1,
