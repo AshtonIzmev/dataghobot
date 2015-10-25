@@ -1,25 +1,14 @@
-from sklearn import cross_validation, metrics
-import numpy as np
-from hyperopt import fmin, tpe, STATUS_OK
-from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import PReLU
+from keras.models import Sequential
 from sklearn.preprocessing import StandardScaler
+from GenericOpt import GenericOpt as Gopt
 
 
-class KerasOpt:
+class KerasOpt(Gopt):
 
-    auc_label = 'auc'
-    logloss_label = 'logloss'
     scaler = StandardScaler()
-    score = np.iinfo(np.int32).max
-
-    def __init__(self, x_data, y_data, verbose=False,):
-        self.verbose = verbose
-        self.x_data = x_data
-        self.y_data = y_data
-        return
 
     @staticmethod
     def build_keras_model(params_arg, x_shape1):
@@ -47,44 +36,22 @@ class KerasOpt:
         model.compile(loss=params_arg['loss_function'], optimizer="adam")
         return model
 
-    def cross_val_pred_keras(self, params_arg):
-        kf = cross_validation.KFold(len(self.x_data), n_folds=params_arg['cv'], shuffle=True)
-        preds_probas = np.zeros(len(self.x_data))
-        for train_index, test_index in kf:
-            x_train, x_test = self.x_data.iloc[train_index], self.x_data.iloc[test_index]
-            y_train = self.y_data.iloc[train_index]
-            model = KerasOpt.build_keras_model(params_arg, x_train.shape[1])
-            x_train_scale = self.scaler.fit_transform(x_train)
-            x_test_scale = self.scaler.transform(x_test)
-            model.fit(x_train_scale, y_train+1, nb_epoch=params_arg['nb_epoch'],
-                      batch_size=params_arg['batch_size'], validation_split=0, verbose=params_arg['verbose'])
-            preds_probas[test_index] = model.predict_proba(x_test_scale, verbose=0)
-        return preds_probas
+    @staticmethod
+    def create_fit_hopt(x_train, y_train, params_arg):
+        model = KerasOpt.build_keras_model(params_arg, x_train.shape[1])
+        x_train_scale = KerasOpt.scaler.fit_transform(x_train)
+        model.fit(x_train_scale, y_train+1, nb_epoch=params_arg['nb_epoch'], batch_size=params_arg['batch_size'],
+                  validation_split=0, verbose=params_arg['verbose'])
+        return model
 
-    def get_score_keras(self, params_arg):
-        preds_probas = self.cross_val_pred_keras(params_arg)
-        if params_arg['eval_metric'] == KerasOpt.auc_label:
-            return -metrics.roc_auc_score(self.y_data, preds_probas)
-        if params_arg['eval_metric'] == KerasOpt.logloss_label:
-            return metrics.log_loss(self.y_data, preds_probas)
-        raise Exception('Eval metric error : auc or logloss')
-
-    def objective_keras(self, params_arg):
-        score = self.get_score_keras(params_arg)
-        if score < self.score:
-            self.score = score
-        if self.verbose:
-            print "\tScore {0}\tParams{1}".format(score, params_arg)
-        return {'loss': score, 'status': STATUS_OK}
-
-    def run_hp_keras(self, params_arg):
-        self.assert_params_ok(params_arg)
-        return fmin(self.objective_keras, params_arg, algo=tpe.suggest, max_evals=params_arg['max_evals'])
+    @staticmethod
+    def predict_hopt(clf_arg, preds, test_index, x_test):
+        x_test_scale = KerasOpt.scaler.transform(x_test)
+        return clf_arg.predict_proba(x_test_scale, verbose=0)
 
     @staticmethod
     def assert_params_ok(params_arg):
-        # models params
-        assert 'cv' in params_arg
+        Gopt.assert_params_ok(params_arg)
         # keras params
         assert 'loss_function' in params_arg
         assert 'verbose' in params_arg
@@ -96,8 +63,4 @@ class KerasOpt:
         assert 'hidden_activation' in params_arg
         assert 'batch_size' in params_arg
         assert 'nb_epoch' in params_arg
-        # hyperopt params
-        assert 'max_evals' in params_arg
-        # metric params
-        assert 'eval_metric' in params_arg
-        assert params_arg['eval_metric'] in [KerasOpt.auc_label, KerasOpt.logloss_label]
+

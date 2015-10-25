@@ -14,7 +14,7 @@ class OptimTestCase(unittest.TestCase):
                                pd.Series(data.target))
         param = HyperoptParam.HyperoptParam.param_space_reg_xgb_tree
         param['eval_metric'] = 'auc'
-        best = xgbopt.run_hp_xgb(param)
+        best = xgbopt.run_hp(param)
         self.assertIsNotNone(best)
         self.assertLess(xgbopt.score, -0.99)
 
@@ -26,7 +26,7 @@ class OptimTestCase(unittest.TestCase):
         param = HyperoptParam.HyperoptParam.param_space_reg_xgb_tree
         param['max_evals'] = 10
         param['eval_metric'] = 'logloss'
-        best = xgbopt.run_hp_xgb(param)
+        best = xgbopt.run_hp(param)
         self.assertIsNotNone(best)
         self.assertLess(xgbopt.score, 0.03)
 
@@ -37,7 +37,7 @@ class OptimTestCase(unittest.TestCase):
                                pd.Series(data.target))
         param = HyperoptParam.HyperoptParam.param_space_reg_xgb_linear
         param['eval_metric'] = 'auc'
-        best = xgbopt.run_hp_xgb(param)
+        best = xgbopt.run_hp(param)
         self.assertIsNotNone(best)
         self.assertLess(xgbopt.score, -0.99)
 
@@ -104,7 +104,7 @@ class OptimTestCase(unittest.TestCase):
         kerasopt = KerasOpt.KerasOpt(pd.DataFrame(data.data), pd.Series(data.target))
         param = HyperoptParam.HyperoptParam.param_space_reg_keras_dnn
         param['eval_metric'] = 'auc'
-        best = kerasopt.run_hp_keras(param)
+        best = kerasopt.run_hp(param)
         self.assertIsNotNone(best)
         self.assertLess(kerasopt.score, -0.95)
 
