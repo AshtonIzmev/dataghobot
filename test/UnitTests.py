@@ -1,6 +1,6 @@
 from sklearn.datasets import load_digits
-from optim.models import SklearnOpt, XGBOpt, VWOpt, KerasOpt
-from optim.hyperopt import HyperoptParam
+from dataghobot.models import SklearnOpt, XGBOpt, VWOpt, KerasOpt
+from dataghobot.hyperopt import HyperoptParam
 import unittest
 import pandas as pd
 
