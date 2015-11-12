@@ -30,7 +30,6 @@ class XGBOpt(Gopt):
         assert 'objective' in params_arg
         assert 'eta' in params_arg
         assert 'num_round' in params_arg
-        assert 'nthread' in params_arg
         assert 'silent' in params_arg
         assert 'seed' in params_arg
         assert 'num_boost_round' in params_arg
