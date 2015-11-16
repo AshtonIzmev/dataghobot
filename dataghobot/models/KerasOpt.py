@@ -45,7 +45,7 @@ class KerasOpt(Gopt):
         return model
 
     @staticmethod
-    def predict_hopt(clf_arg, preds, test_index, x_test):
+    def predict_hopt(clf_arg, x_test):
         x_test_scale = KerasOpt.scaler.transform(x_test)
         return clf_arg.predict_proba(x_test_scale, verbose=0)
 

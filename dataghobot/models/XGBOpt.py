@@ -10,7 +10,7 @@ class XGBOpt(Gopt):
         return re.sub(r'[^a-zA-Z0-9]+', 'xx', s)
 
     @staticmethod
-    def predict_hopt(clf_arg, preds, test_index, x_test):
+    def predict_hopt(clf_arg, x_test):
         dtest = xgb.DMatrix(x_test.rename(columns=XGBOpt.straln))
         return clf_arg.predict(dtest)
 
@@ -18,7 +18,6 @@ class XGBOpt(Gopt):
     def create_fit_hopt(x_train, y_train, params_arg):
         dtrain = xgb.DMatrix(x_train.rename(columns=XGBOpt.straln), label=y_train)
         plst = params_arg.items()
-        plst += [('eval_metric', params_arg['eval_metric'])]
         evallist = [(dtrain, 'train')]
         return xgb.train(plst, dtrain, 25, evallist, verbose_eval=False)
 
@@ -26,6 +25,7 @@ class XGBOpt(Gopt):
     def assert_params_ok(params_arg):
         Gopt.assert_params_ok(params_arg)
         # xgb params
+        assert 'eval_metric' in params_arg
         assert 'booster' in params_arg
         assert 'objective' in params_arg
         assert 'eta' in params_arg

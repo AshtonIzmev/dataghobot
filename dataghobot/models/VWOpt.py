@@ -41,7 +41,7 @@ class VWOpt(Gopt):
         return clf
 
     @staticmethod
-    def predict_hopt(clf_arg, preds, test_index, x_test):
+    def predict_hopt(clf_arg, x_test):
         res_list = []
         for i, row in x_test.iterrows():
             features = VWOpt.convert_numeric_row(row)

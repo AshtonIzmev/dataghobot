@@ -61,6 +61,26 @@ class OptimTestCase(unittest.TestCase):
         self.assertIsNotNone(best)
         self.assertLess(skopt.score, 0.03)
 
+    def test_etopt_auc(self):
+        data = load_digits(2)
+        skopt = SklearnOpt.SklearnOpt(pd.DataFrame(data.data), pd.Series(data.target))
+        param = HyperoptParam.HyperoptParam.param_space_reg_skl_rf
+        param['eval_metric'] = 'auc'
+        param['type'] = 'extra_trees'
+        best = skopt.run_hp(param)
+        self.assertIsNotNone(best)
+        self.assertLess(skopt.score, -0.99)
+
+    def test_etopt_logloss(self):
+        data = load_digits(2)
+        skopt = SklearnOpt.SklearnOpt(pd.DataFrame(data.data), pd.Series(data.target))
+        param = HyperoptParam.HyperoptParam.param_space_reg_skl_rf
+        param['eval_metric'] = 'logloss'
+        param['type'] = 'extra_trees'
+        best = skopt.run_hp(param)
+        self.assertIsNotNone(best)
+        self.assertLess(skopt.score, 0.03)
+
     def test_lropt_auc(self):
         data = load_digits(2)
         skopt = SklearnOpt.SklearnOpt(pd.DataFrame(data.data), pd.Series(data.target))

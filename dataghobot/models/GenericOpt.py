@@ -17,7 +17,7 @@ class GenericOpt:
         return
 
     @staticmethod
-    def predict_hopt(clf_arg, preds, test_index, x_test):
+    def predict_hopt(clf_arg, x_test):
         raise Exception('Not meant to be implemented')
 
     @staticmethod
@@ -27,13 +27,12 @@ class GenericOpt:
     def cross_val_pred(self, params_arg):
         cv = params_arg['cv']
         kf = cross_validation.KFold(len(self.x_data), n_folds=cv, shuffle=True)
-        preds = np.zeros(len(self.x_data))
         preds_probas = np.zeros((len(self.x_data)))
         for train_index, test_index in kf:
             x_train, x_test = self.x_data.iloc[train_index], self.x_data.iloc[test_index]
             y_train = self.y_data.iloc[train_index]
             clf_fit = self.create_fit_hopt(x_train, y_train, params_arg)
-            preds_probas[test_index] = self.predict_hopt(clf_fit, preds, test_index, x_test)
+            preds_probas[test_index] = self.predict_hopt(clf_fit, x_test)
         return preds_probas
 
     def get_score(self, params_arg):

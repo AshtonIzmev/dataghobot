@@ -1,4 +1,4 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -15,6 +15,12 @@ class SklearnOpt(Gopt):
                                           random_state=params_arg['random_state'],
                                           max_depth=1 + params_arg['max_depth'],
                                           n_jobs=params_arg['n_jobs'])
+        if params_arg['type'] == 'extra_trees':
+            return ExtraTreesClassifier(n_estimators=params_arg['n_estimators'],
+                                        max_features=params_arg['max_features'],
+                                        random_state=params_arg['random_state'],
+                                        max_depth=1 + params_arg['max_depth'],
+                                        n_jobs=params_arg['n_jobs'])
         if params_arg['type'] == 'logistic_regression':
             return Pipeline([
                 ('scr', StandardScaler()),
@@ -22,7 +28,7 @@ class SklearnOpt(Gopt):
         raise Exception('Unknown model "type" parameter')
 
     @staticmethod
-    def predict_hopt(clf_arg, preds, test_index, x_test):
+    def predict_hopt(clf_arg, x_test):
         return clf_arg.predict_proba(x_test)[:, 1]
 
     @staticmethod
