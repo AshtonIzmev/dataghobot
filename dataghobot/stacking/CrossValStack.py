@@ -39,8 +39,11 @@ def get_best_etopt(x, y):
     return skopt.run_hp(param), param
 
 
-def cross_val_stack(x_train, y_train, x_test, xgbparam, sklparam, etparams, cv=5):
-    kf = cross_validation.KFold(len(x_train), n_folds=cv, shuffle=True)
+def cross_val_stack(x_train, y_train, x_test, xgbparam, sklparam, etparams, **cross_val_stack_args):
+
+    csvstack_cv = cross_val_stack_args.get('csvstack_cv', 5)
+
+    kf = cross_validation.KFold(len(x_train), n_folds=csvstack_cv, shuffle=True)
     res = []
     i = 0
     logging.info("Starting cross-val-stacking")

@@ -38,9 +38,9 @@ def num_dum_gen(x, numcol, dummy_max):
             x.loc[:, col] = dummy_x[col]
 
 
-def get_clf_feat(clf, x, nb_features=30):
+def get_clf_feat(clf, x, nb_feat=30):
     feature_importances = clf.feature_importances_
-    sorted_idx = np.argsort(feature_importances)[-nb_features:]
+    sorted_idx = np.argsort(feature_importances)[-nb_feat:]
     return zip(np.array(x.columns)[sorted_idx], feature_importances[sorted_idx])
 
 
@@ -59,8 +59,8 @@ def chaos_gen_do(x, numcol1, numcol2, catcol, choice, dummy_max):
         num_dum_gen(x, numcol1, dummy_max=dummy_max)
 
 
-def chaos_gen(x, numcols, catcols, chaos_gen_iter, dummy_max):
-    for j in range(chaos_gen_iter):
+def chaos_gen(x, numcols, catcols, gen_iter, dummy_max):
+    for j in range(gen_iter):
         numcol1 = random.choice(numcols)
         numcol2 = random.choice(numcols)
         catcol = random.choice(catcols)
@@ -68,22 +68,28 @@ def chaos_gen(x, numcols, catcols, chaos_gen_iter, dummy_max):
         chaos_gen_do(x, numcol1, numcol2, catcol, choice, dummy_max)
 
 
-def chaos_feature_importance(x_feat, y_feat, shadow_selector, feat_dic={}, chaos_feat_iter=10,
-                             n_estimators=10, nb_features=30, chaos_gen_iter=20, dummy_max=20):
+def chaos_feature_importance(x_feat, y_feat, shadow_selector, feat_dic={}, **chaos_args):
+
+    chaos_feat_iter = chaos_args.get('chaos_feat_iter', 10)
+    chaos_n_estimators = chaos_args.get('chaos_n_estimators', 10)
+    chaos_nb_features = chaos_args.get('chaos_nb_features', 30)
+    chaos_gen_iter = chaos_args.get('chaos_gen_iter', 20)
+    chaos_dummy_max = chaos_args.get('chaos_dummy_max', 20)
+
     ori_numcols = x_feat.columns
     sel_numcols = []
     for j in range(chaos_feat_iter):
         x_feat = x_feat[list(set(ori_numcols) | set(sel_numcols))]
-        #print 'CHAOS feature importance '+str(j)
-        clf = ensemble.ExtraTreesClassifier(n_estimators=n_estimators, n_jobs=-1)
+        print 'CHAOS feature importance '+str(j)
+        clf = ensemble.ExtraTreesClassifier(n_estimators=chaos_n_estimators, n_jobs=-1)
         numcols = [c for c in x_feat.columns if x_feat[c].dtype.name != 'object']
         catcols = [c for c in x_feat.columns if x_feat[c].dtype.name == 'object']
-        chaos_gen(x_feat, numcols, catcols, chaos_gen_iter=chaos_gen_iter, dummy_max=dummy_max)
+        chaos_gen(x_feat, numcols, catcols, gen_iter=chaos_gen_iter, dummy_max=chaos_dummy_max)
         numcol2 = [c for c in x_feat.columns if x_feat[c].dtype.name != 'object']
         x_feat_sel = x_feat[shadow_selector][numcol2]
         y_feat_sel = y_feat
         clf.fit(x_feat_sel.replace(np.inf, 0).replace(-np.inf, 0).fillna(-1), y_feat_sel)
-        for f, v in get_clf_feat(clf, x_feat, nb_features=nb_features):
+        for f, v in get_clf_feat(clf, x_feat, nb_feat=chaos_nb_features):
             sel_numcols.append(f)
             if f in feat_dic:
                 feat_dic[f] += v

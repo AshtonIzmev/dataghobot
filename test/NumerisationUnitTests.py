@@ -22,7 +22,7 @@ class OptimTestCase(unittest.TestCase):
         x['feat_tobedef'] = x[x.columns[0]].map(lambda s: str(s))
         x['feat_toother'] = x[x.columns[0]].map(lambda s: str(int(3*s)))
         num_cols, todummy_cols, tootherisation_cols, tobedefined_cols = \
-            Numerisation.handle_columns(x, [], [], entropy_max=np.inf)
+            Numerisation.handle_columns(x, [], [], numerize_entropy_max=np.inf)
         self.assertEqual(len(tootherisation_cols), 2)
         self.assertEqual(len(tobedefined_cols), 0)
 
@@ -31,7 +31,7 @@ class OptimTestCase(unittest.TestCase):
         x['feat_tobedef'] = x[x.columns[0]].map(lambda s: str(s))
         x['feat_toother'] = x[x.columns[0]].map(lambda s: str(int(3*s)))
         num_cols, todummy_cols, tootherisation_cols, tobedefined_cols = \
-            Numerisation.handle_columns(x, [], [], entropy_max=0)
+            Numerisation.handle_columns(x, [], [], numerize_entropy_max=0)
         self.assertEqual(len(todummy_cols), 0)
         self.assertEqual(len(tootherisation_cols), 0)
         self.assertEqual(len(tobedefined_cols), 2)

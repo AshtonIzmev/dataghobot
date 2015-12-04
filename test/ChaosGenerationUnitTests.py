@@ -23,9 +23,8 @@ class OptimTestCase(unittest.TestCase):
         x_all = pd.concat([x_train, x_shadow])
         shadow_selector = x_all['source'] == 0
         ChaosGeneration.chaos_feature_importance(x_all, y_train, shadow_selector, feat_dic=dic,
-                                                 chaos_feat_iter=10, nb_features=20, chaos_gen_iter=30)
+                                                 feat_iter=10, nb_features=20, chaos_gen_iter=30)
         sorted_x = sorted(dic.items(), key=operator.itemgetter(1))
-        print sorted_x
         self.assertGreater(len(dic), len(x_train.columns))
         self.assertGreater(len(dic), len(x_shadow.columns))
 
@@ -40,10 +39,9 @@ class OptimTestCase(unittest.TestCase):
 
         x_train.loc[:, 'source'] = 0
         shadow_selector = x_train['source'] == 0
-        ChaosGeneration.chaos_feature_importance(x_train, y_train, shadow_selector, feat_dic=dic, chaos_feat_iter=10,
+        ChaosGeneration.chaos_feature_importance(x_train, y_train, shadow_selector, feat_dic=dic, feat_iter=10,
                                                  nb_features=20, chaos_gen_iter=30)
         sorted_x = sorted(dic.items(), key=operator.itemgetter(1))
-        print sorted_x
         self.assertGreater(len(dic), len(x_train.columns))
 
 

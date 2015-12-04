@@ -2,6 +2,7 @@ from dataghobot.featengine import MissingValues
 from dataghobot.ghobot import Automaton
 from dataghobot.utils import DataGenerator
 from dataghobot.stacking import CrossValStack
+from dataghobot.utils import ParamsGenerator
 from sklearn.cross_validation import train_test_split
 from dataghobot.models import SklearnOpt, XGBOpt
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
@@ -20,7 +21,9 @@ class OptimTestCase(unittest.TestCase):
 
         x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
 
-        res = Automaton.robot(x_train, y_train, x_valid, nb_auto_max=5)
+        robot_args = ParamsGenerator.generate_all_params()
+
+        res = Automaton.robot(x_train, y_train, x_valid, **robot_args)
 
         y_pred_valid = Automaton.stacking_res_to_one_pred(res)
 
