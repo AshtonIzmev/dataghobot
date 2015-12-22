@@ -18,13 +18,14 @@ class HyperoptParam:
         'lambda': hp.quniform('lambda', 0, 5, 0.05),
         'alpha': hp.quniform('alpha', 0, 0.5, 0.005),
         'lambda_bias': hp.quniform('lambda_bias', 0, 3, 0.1),
+        'silent': 1,
+        'seed': 42,
+        'eval_metric': 'auc',
+        # performance parameters
         'num_round': 5,
         'num_boost_round': 5,
         'nthread': 1,
-        'silent': 1,
-        'seed': 42,
         'max_evals': 1,
-        'eval_metric': 'auc', #logloss
         'cv': 3
     }
 
@@ -38,14 +39,15 @@ class HyperoptParam:
         'max_depth': hp.quniform('max_depth', 1, 10, 1),
         'subsample': hp.quniform('subsample', 0.5, 1, 0.1),
         'colsample_bytree': hp.quniform('colsample_bytree', 0.1, 1, 0.1),
-        'num_round': 5,
-        'num_boost_round': 5,
-        'nthread': 1,
         'silent': 1,
         'seed': 42,
+        'eval_metric': 'auc',
+        # performance parameters
+        'cv': 5,
         'max_evals': 1,
-        'eval_metric': 'auc', #logloss
-        'cv': 5
+        'num_round': 3,
+        'num_boost_round': 3,
+        'nthread': 1
     }
 
     #######################################
@@ -54,26 +56,28 @@ class HyperoptParam:
     param_space_reg_skl_rf = {
         'task': 'reg_skl_rf',
         'type': 'random_forest',
-        'n_estimators': 32,
         'max_features': hp.quniform('max_features', 0.05, 1.0, 0.05),
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 5,
+        'eval_metric': 'auc',
+        # performance parameters
         'cv': 3,
-        'eval_metric': 'auc' #logloss
+        'max_evals': 3,
+        'n_estimators': 16
     }
 
     param_space_reg_skl_etr = {
         'task': 'reg_skl_etr',
-        'n_estimators': 32,
         'max_features': hp.quniform('max_features', 0.05, 1.0, 0.05),
         'n_jobs': -1,
         'max_depth': hp.randint('max_depth', 25),
         'random_state': 42,
-        'max_evals': 1,
+        'eval_metric': 'logloss',
+        # performance parameters
         'cv': 3,
-        'eval_metric': 'logloss' #auc
+        'max_evals': 3,
+        'n_estimators': 16
     }
 
     param_space_clf_skl_lr = {
@@ -81,9 +85,10 @@ class HyperoptParam:
         'type': 'logistic_regression',
         'C': hp.loguniform('C', np.log(0.001), np.log(10)),
         'random_state': 42,
+        'eval_metric': 'auc',
+        # performance parameters
         'max_evals': 1,
         'cv': 3,
-        'eval_metric': 'auc' #auc
     }
 
     #######################################
@@ -104,7 +109,7 @@ class HyperoptParam:
         'max_evals': 1,
         'cv': 3,
         'verbose': 0, # 0/1 choice
-        'eval_metric': 'auc' # or logloss
+        'eval_metric': 'auc'
     }
 
     #######################################
@@ -112,12 +117,13 @@ class HyperoptParam:
     #######################################
     param_space_classification_vw = {
         'loss_function': 'logistic',
-        'passes': 5,
         'l1': hp.quniform('l1', 0.000000001, 0.00000001, 0.000000001),
         'l2': hp.quniform('l2', 0.000000001, 0.00000001, 0.000000001),
         'decay_learning_rate': hp.quniform('decay_learning_rate', 0.5, 1.5, 0.1),
         'learning_rate': hp.quniform('learning_rate', 0.2, 0.8, 0.1),
+        'eval_metric': 'auc',
+        # performance parameters
+        'passes': 5,
         'max_evals': 5,
-        'cv': 3,
-        'eval_metric': 'auc' # or logloss
+        'cv': 3
     }

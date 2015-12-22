@@ -1,7 +1,6 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn import cross_validation
 from dataghobot.models import SklearnOpt, XGBOpt
-from dataghobot.hyperopt import HyperoptParam
 import pandas as pd
 import numpy as np
 import logging
@@ -16,27 +15,16 @@ def predict_opt_clf(gopt, goptparam, x_test1, x_test2):
     return gopt.predict_hopt(opt_clf, x_test1), gopt.predict_hopt(opt_clf, x_test2)
 
 
-def get_best_xgbopt(x, y):
-    xgbopt = XGBOpt.XGBOpt(x, y)
-    param = HyperoptParam.HyperoptParam.param_space_reg_xgb_tree
-    param['eval_metric'] = 'auc'
-    return xgbopt.run_hp(param), param
+def get_best_xgbopt(x, y, params):
+    return XGBOpt.XGBOpt(x, y).run_hp(params), params
 
 
-def get_best_sklopt(x, y):
-    skopt = SklearnOpt.SklearnOpt(x, y)
-    param = HyperoptParam.HyperoptParam.param_space_reg_skl_rf
-    param['eval_metric'] = 'auc'
-    param['type'] = 'random_forest'
-    return skopt.run_hp(param), param
+def get_best_sklopt(x, y, params):
+    return SklearnOpt.SklearnOpt(x, y).run_hp(params), params
 
 
-def get_best_etopt(x, y):
-    skopt = SklearnOpt.SklearnOpt(x, y)
-    param = HyperoptParam.HyperoptParam.param_space_reg_skl_rf
-    param['eval_metric'] = 'auc'
-    param['type'] = 'extra_trees'
-    return skopt.run_hp(param), param
+def get_best_etopt(x, y, params):
+    return SklearnOpt.SklearnOpt(x, y).run_hp(params), params
 
 
 def cross_val_stack(x_train, y_train, x_test, xgbparam, sklparam, etparams, **cross_val_stack_args):

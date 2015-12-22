@@ -5,6 +5,7 @@ import unittest
 import pandas as pd
 from dataghobot.stacking import CrossValStack
 from dataghobot.models import SklearnOpt, XGBOpt
+from dataghobot.utils import ParamsGenerator
 
 
 class OptimTestCase(unittest.TestCase):
@@ -14,17 +15,21 @@ class OptimTestCase(unittest.TestCase):
 
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
 
-        xgbparam = CrossValStack.get_best_xgbopt(x_train, y_train)
-        sklparam = CrossValStack.get_best_sklopt(x_train, y_train)
-        extparam = CrossValStack.get_best_etopt(x_train, y_train)
+        xgb_initparam = ParamsGenerator.get_xgb_init_param()
+        rf_initparam = ParamsGenerator.get_rf_init_param()
+        ext_initparam = ParamsGenerator.get_ext_init_param()
 
-        res = CrossValStack.cross_val_stack(x_train, y_train, x_test, xgbparam, sklparam, extparam)
+        xgb_bestparam = CrossValStack.get_best_xgbopt(x_train, y_train, xgb_initparam)
+        rf_bestparam = CrossValStack.get_best_sklopt(x_train, y_train, rf_initparam)
+        ext_bestparam = CrossValStack.get_best_etopt(x_train, y_train, ext_initparam)
+
+        res = CrossValStack.cross_val_stack(x_train, y_train, x_test, xgb_bestparam, rf_bestparam, ext_bestparam)
         dfres = pd.DataFrame([res[0][:, 1], res[1][:, 1], res[2][:, 1]]).transpose()
         dfres.columns = ['p1', 'p2', 'p3']
 
-        y_test_xgb = CrossValStack.predict_opt_clf(XGBOpt.XGBOpt(x_train, y_train), xgbparam, x_test, x_test)[0]
-        y_test_skl = CrossValStack.predict_opt_clf(SklearnOpt.SklearnOpt(x_train, y_train), sklparam, x_test, x_test)[0]
-        y_test_ext = CrossValStack.predict_opt_clf(SklearnOpt.SklearnOpt(x_train, y_train), extparam, x_test, x_test)[0]
+        y_test_xgb = CrossValStack.predict_opt_clf(XGBOpt.XGBOpt(x_train, y_train), xgb_bestparam, x_test, x_test)[0]
+        y_test_skl = CrossValStack.predict_opt_clf(SklearnOpt.SklearnOpt(x_train, y_train), rf_bestparam, x_test, x_test)[0]
+        y_test_ext = CrossValStack.predict_opt_clf(SklearnOpt.SklearnOpt(x_train, y_train), ext_bestparam, x_test, x_test)[0]
 
         print metrics.roc_auc_score(y_test, y_test_xgb)
         print metrics.roc_auc_score(y_test, y_test_skl)

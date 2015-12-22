@@ -6,7 +6,7 @@ from dataghobot.stacking import CrossValStack as Cvs
 from sklearn.cross_validation import KFold
 
 
-def robot(x_train, y_train, x_valid, **robot_kwargs):
+def robot(x_train, y_train, x_valid, xgb_ip, skl_ip, ext_ip, **robot_kwargs):
 
     robot_cv_feat = robot_kwargs.get('robot_cv_feat', 6)
     robot_cv_hopt = robot_kwargs.get('robot_cv_hopt', 6)
@@ -37,11 +37,11 @@ def robot(x_train, y_train, x_valid, **robot_kwargs):
             y_hopt = y_train1.iloc[hopt_idx]
 
             logging.info("Looking for hopt parameters")
-            xgbparam = enhance_param(Cvs.get_best_xgbopt(x_hopt, y_hopt), **robot_kwargs)
-            sklparam = enhance_param(Cvs.get_best_sklopt(x_hopt, y_hopt), **robot_kwargs)
-            extparam = enhance_param(Cvs.get_best_etopt(x_hopt, y_hopt), **robot_kwargs)
+            xgb_rp = enhance_param(Cvs.get_best_xgbopt(x_hopt, y_hopt, xgb_ip), **robot_kwargs)
+            skl_rp = enhance_param(Cvs.get_best_sklopt(x_hopt, y_hopt, skl_ip), **robot_kwargs)
+            ext_rp = enhance_param(Cvs.get_best_etopt(x_hopt, y_hopt, ext_ip), **robot_kwargs)
             res.append(
-                Cvs.cross_val_stack(x_train2, y_train2, x_valid_num, xgbparam, sklparam, extparam, **robot_kwargs)
+                Cvs.cross_val_stack(x_train2, y_train2, x_valid_num, xgb_rp, skl_rp, ext_rp, **robot_kwargs)
             )
 
             nb_auto += 1
