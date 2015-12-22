@@ -1,5 +1,5 @@
 from dataghobot.utils import DataGenerator
-from dataghobot.models import SklearnOpt, XGBOpt, VWOpt, KerasOpt
+from dataghobot.models import SklearnOpt, XGBOpt, KerasOpt
 from dataghobot.hyperopt import HyperoptParam
 import unittest
 
@@ -93,24 +93,6 @@ class OptimTestCase(unittest.TestCase):
         best = skopt.run_hp(param)
         self.assertIsNotNone(best)
         self.assertLess(skopt.score, 0.011)
-
-    def test_vwopt_auc(self):
-        x, y = DataGenerator.get_digits_data()
-        vwopt = VWOpt.VWOpt(x, y)
-        param = HyperoptParam.HyperoptParam.param_space_classification_vw
-        param['eval_metric'] = 'auc'
-        best = vwopt.run_hp(param)
-        self.assertIsNotNone(best)
-        self.assertLess(vwopt.score, -0.99)
-
-    def test_vwopt_logloss(self):
-        x, y = DataGenerator.get_digits_data()
-        vwopt = VWOpt.VWOpt(x, y)
-        param = HyperoptParam.HyperoptParam.param_space_classification_vw
-        param['eval_metric'] = 'logloss'
-        best = vwopt.run_hp(param)
-        self.assertIsNotNone(best)
-        self.assertLess(vwopt.score, 0.3)
 
     def test_kerasopt_auc(self):
         x, y = DataGenerator.get_digits_data()
