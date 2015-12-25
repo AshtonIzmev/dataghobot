@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def miss_val_indicator(df, miss_val=None, suffix='_is_nan'):
+def add_miss_val_indicator(df, miss_val=None, suffix='_is_nan'):
     """
     Add new columns with a missing value indicator
     :param df:
@@ -21,7 +21,7 @@ def miss_val_indicator(df, miss_val=None, suffix='_is_nan'):
                 df[col+suffix] = col_null.map(int)
 
 
-def miss_val_indicator_dic(df, miss_dic=None, suffix='_is_nan'):
+def add_miss_val_indicator_from_dic(df, miss_dic=None, suffix='_is_nan'):
     """
     Add new columns with a missing value indicator
     :param df:
@@ -35,7 +35,7 @@ def miss_val_indicator_dic(df, miss_dic=None, suffix='_is_nan'):
             df[k+suffix] = col_null.map(int)
 
 
-def fill_mean(df):
+def fill_with_mean(df):
     """
     Fill missing values of numeric columns with mean
     :param df:

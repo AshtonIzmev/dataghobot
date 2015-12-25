@@ -11,12 +11,13 @@ import unittest
 
 class OptimTestCase(unittest.TestCase):
 
+    # robot with full pipeline
     def test_full_robot(self):
         # loading
         x, y = DataGenerator.get_adult_data()
 
         # cleaning
-        MissingValues.miss_val_indicator(x)
+        MissingValues.add_miss_val_indicator(x)
 
         x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
 
@@ -33,12 +34,13 @@ class OptimTestCase(unittest.TestCase):
         print metrics.roc_auc_score(y_valid, y_pred_valid)
         print metrics.log_loss(y_valid, y_pred_valid)
 
+    # Robot without hopt pipelining
     def test_small_robot(self):
         # loading
         x, y = DataGenerator.get_adult_data()
 
         # cleaning
-        MissingValues.miss_val_indicator(x)
+        MissingValues.add_miss_val_indicator(x)
 
         x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
 
@@ -66,7 +68,7 @@ class OptimTestCase(unittest.TestCase):
         x, y = DataGenerator.get_adult_data()
 
         # cleaning
-        MissingValues.miss_val_indicator(x)
+        MissingValues.add_miss_val_indicator(x)
 
         x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
 
