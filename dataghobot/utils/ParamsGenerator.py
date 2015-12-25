@@ -1,49 +1,26 @@
 from dataghobot.hyperopt import HyperoptParam
 
 
-def generate_robot_params():
-    return {
-        'robot_cv_feat': 6,
-        'robot_cv_hopt': 6,
-        'robot_nb_auto_max': 2,
-        'robot_rand_state': 42
-    }
-
-
-def generate_chaos_params():
-    return {
-        'chaos_feat_iter': 10,
-        'chaos_n_estimators': 10,
-        'chaos_nb_features': 30,
-        'chaos_gen_iter': 20,
-        'chaos_dummy_max': 20
-    }
-
-
-def generate_cross_val_stack_params():
-    return {
-        'csvstack_cv': 5
-    }
-
-
-def generate_numerize_params():
+def generate_all_params(feat_iter=10, n_estim=10, nb_feat=30, gen_iter=20, dumm_max=20,
+                        cv_feat=6, cv_hopt=6, cv_stack=5, auto_max=2, rand_st=42):
     return {
         'numerize_nb_dummy_max': 10,
         'numerize_entropy_max': 3,
         'numerize_ratio': 10,
-        'numerize_time_window': [5, 12, 18]
+        'numerize_time_window': [5, 12, 18],
+
+        'chaos_feat_iter': feat_iter,
+        'chaos_n_estimators': n_estim,
+        'chaos_nb_features': nb_feat,
+        'chaos_gen_iter': gen_iter,
+        'chaos_dummy_max': dumm_max,
+
+        'robot_cv_feat': cv_feat,
+        'robot_cv_hopt': cv_hopt,
+        'robot_cv_stack': cv_stack,
+        'robot_nb_auto_max': auto_max,
+        'robot_rand_state': rand_st
     }
-
-
-def union(*dicts):
-    return dict(sum(map(lambda dct: list(dct.items()), dicts), []))
-
-
-def generate_all_params():
-    return union(generate_numerize_params(),
-                 generate_cross_val_stack_params(),
-                 generate_chaos_params(),
-                 generate_robot_params())
 
 
 def get_xgb_init_param(cv=5, max_evals=1, num_round=3, num_boost_round=3, nthread=1):

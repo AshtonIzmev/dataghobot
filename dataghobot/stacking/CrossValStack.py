@@ -30,31 +30,35 @@ def get_best_etopt(x, y, params):
 def cross_val_stack(x_train, y_train, x_test, xgbparam, sklparam, etparams, **cross_val_stack_args):
 
     csvstack_cv = cross_val_stack_args.get('csvstack_cv', 5)
-
-    kf = cross_validation.KFold(len(x_train), n_folds=csvstack_cv, shuffle=True)
     res = []
     i = 0
     logging.info("Starting cross-val-stacking")
-    for train_train_index, train_stack_index in kf:
+    for train_train_idx, train_stack_idx in cross_validation.KFold(len(x_train), n_folds=csvstack_cv, shuffle=True):
         logging.info("Cross-val-stacking round " + str(i))
-        x_train_train = x_train.iloc[train_train_index]
-        y_train_train = y_train.iloc[train_train_index]
-        x_train_stack = x_train.iloc[train_stack_index]
-        y_train_stack = y_train.iloc[train_stack_index]
-
-        xgbopt = XGBOpt.XGBOpt(x_train_train, y_train_train)
-        y_pred_stack_1, y_pred_test_1 = predict_opt_clf(xgbopt, xgbparam, x_train_stack, x_test)
-
-        skopt = SklearnOpt.SklearnOpt(x_train_train, y_train_train)
-        y_pred_stack_2, y_pred_test_2 = predict_opt_clf(skopt, sklparam, x_train_stack, x_test)
-
-        skopt = SklearnOpt.SklearnOpt(x_train_train, y_train_train)
-        y_pred_stack_3, y_pred_test_3 = predict_opt_clf(skopt, etparams, x_train_stack, x_test)
-
-        x_pred_stack = pd.DataFrame(np.transpose(np.array([y_pred_stack_1, y_pred_stack_2, y_pred_stack_3])))
-        x_pred_test = pd.DataFrame(np.transpose(np.array([y_pred_test_1, y_pred_test_2, y_pred_test_3])))
-            
-        lr = LogisticRegression()
-        lr.fit(x_pred_stack, y_train_stack)
-        res.append(lr.predict_proba(x_pred_test))
+        y_probas = stack_that(x_train, y_train, x_test, train_train_idx, train_stack_idx, sklparam, etparams, xgbparam)
+        res.append(y_probas)
     return res
+
+
+def stack_that(x_train, y_train, x_test, train_idx, stack_idx, rfparams, extparams, xgbparams):
+    x_train_train = x_train.iloc[train_idx]
+    y_train_train = y_train.iloc[train_idx]
+    x_train_stack = x_train.iloc[stack_idx]
+    y_train_stack = y_train.iloc[stack_idx]
+
+    xgbopt = XGBOpt.XGBOpt(x_train_train, y_train_train)
+    y_pred_stack_1, y_pred_test_1 = predict_opt_clf(xgbopt, xgbparams, x_train_stack, x_test)
+
+    skopt = SklearnOpt.SklearnOpt(x_train_train, y_train_train)
+    y_pred_stack_2, y_pred_test_2 = predict_opt_clf(skopt, rfparams, x_train_stack, x_test)
+
+    skopt = SklearnOpt.SklearnOpt(x_train_train, y_train_train)
+    y_pred_stack_3, y_pred_test_3 = predict_opt_clf(skopt, extparams, x_train_stack, x_test)
+
+    x_pred_stack = pd.DataFrame(np.transpose(np.array([y_pred_stack_1, y_pred_stack_2, y_pred_stack_3])))
+    x_pred_test = pd.DataFrame(np.transpose(np.array([y_pred_test_1, y_pred_test_2, y_pred_test_3])))
+
+    lr = LogisticRegression()
+    lr.fit(x_pred_stack, y_train_stack)
+
+    return lr.predict_proba(x_pred_test)

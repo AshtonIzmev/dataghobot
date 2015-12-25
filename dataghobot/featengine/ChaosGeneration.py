@@ -80,7 +80,6 @@ def chaos_feature_importance(x_feat, y_feat, shadow_selector, feat_dic={}, **cha
     sel_numcols = []
     for j in range(chaos_feat_iter):
         x_feat = x_feat[list(set(ori_numcols) | set(sel_numcols))]
-        print 'CHAOS feature importance '+str(j)
         clf = ensemble.ExtraTreesClassifier(n_estimators=chaos_n_estimators, n_jobs=-1)
         numcols = [c for c in x_feat.columns if x_feat[c].dtype.name != 'object']
         catcols = [c for c in x_feat.columns if x_feat[c].dtype.name == 'object']
