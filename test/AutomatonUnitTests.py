@@ -1,4 +1,5 @@
 from dataghobot.ghobot import Automaton
+from dataghobot.utils import Misc
 import unittest
 import numpy as np
 
@@ -14,7 +15,7 @@ class OptimTestCase(unittest.TestCase):
             'ok': 42,
             'hehe': 13
         }
-        param_result = Automaton.enhance_param([params1, None], **params2)
+        param_result = Misc.enhance_param([params1, None], **params2)
         self.assertEqual(param_result[0]['ok'], 42)
         self.assertEqual(param_result[0]['ko'], 2)
         self.assertEqual(len(param_result[0]), 2)
@@ -27,7 +28,7 @@ class OptimTestCase(unittest.TestCase):
         aa2 = [a1, a2, a3]
         aa3 = [a1, a2, a3]
         aaa = [aa1, aa2, aa3]
-        result = Automaton.stacking_res_to_one_pred(aaa)
+        result = Misc.stacking_res_to_one_pred(aaa)
         self.assertEqual(len(result), 3)
 
 

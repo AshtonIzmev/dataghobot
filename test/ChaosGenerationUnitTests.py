@@ -44,6 +44,33 @@ class OptimTestCase(unittest.TestCase):
         sorted_x = sorted(dic.items(), key=operator.itemgetter(1))
         self.assertGreater(len(dic), len(x_train.columns))
 
+    def test_handle_date_nonreg(self):
+        x, y = DataGenerator.get_digits_data()
+
+        # In order to obtain some categorical columns
+        from datetime import datetime
+        x['date'] = datetime.now()
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+        dic = {}
+
+        x_train.loc[:, 'source'] = 0
+        shadow_selector = x_train['source'] == 0
+        ChaosGeneration.chaos_feature_importance(x_train, y_train, shadow_selector, feat_dic=dic, feat_iter=10,
+                                                 nb_features=20, chaos_gen_iter=30)
+        self.assertGreater(len(dic), len(x_train.columns))
+
+    def test_handle_nocategoric_nonreg(self):
+        x, y = DataGenerator.get_digits_data()
+
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=42)
+        dic = {}
+
+        x_train.loc[:, 'source'] = 0
+        shadow_selector = x_train['source'] == 0
+        ChaosGeneration.chaos_feature_importance(x_train, y_train, shadow_selector, feat_dic=dic, feat_iter=10,
+                                                 nb_features=20, chaos_gen_iter=30)
+        self.assertGreater(len(dic), len(x_train.columns))
+
 
 if __name__ == '__main__':
     unittest.main()

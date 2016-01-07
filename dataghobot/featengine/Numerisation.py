@@ -1,6 +1,7 @@
 from scipy.stats import entropy
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 
 def handle_columns(df, key_cols, date_cols, **numerize_args):
@@ -29,30 +30,34 @@ def handle_columns(df, key_cols, date_cols, **numerize_args):
 def treat_dataframe(df_arg, num_cols, date_cols, todummy_cols, toother_cols, **numerize_args):
     """
     Convert a dataset into a full numeric matrix
-    :param df_arg:
+    :param df_arg: original dataframe
     :param num_cols: columns to keep as they are
     :param date_cols: columns for date feature extraction
     :param todummy_cols: columns to extract dummies
     :param toother_cols: columns to extract dummies after otherisation
     :param numerize_args: additionnal arguments
-    :return:
+    :return: numeric dataframe with dummies and datetimes treated
     """
 
     numerize_ratio = numerize_args.get('numerize_ratio', 10)
     numerize_time_window = numerize_args.get('numerize_time_window', [5, 12, 18])
+    numerize_tqdm = numerize_args.get('numerize_tqdm_disable', True)
 
     x_result = pd.DataFrame()
-    for col in todummy_cols:
-        dummies = pd.get_dummies(df_arg[col], prefix='split_'+col, dummy_na=True)
-        x_result = pd.concat([x_result, dummies], axis=1)
-    for col in toother_cols:
+    dummies_tmp = []
+    for col in tqdm(todummy_cols, disable=numerize_tqdm, desc='dummy_cols'):
+        dummies = pd.get_dummies(df_arg[col], prefix='split_'+col,
+                                 dummy_na=True).astype('int8')
+        dummies_tmp.append(dummies)
+    for col in tqdm(toother_cols, disable=numerize_tqdm, desc='other_cols'):
         value_counts = df_arg[col].fillna('').value_counts().to_dict()
 
         def otherisation(s):
             return 'other' if value_counts[s] < df_arg.shape[0]/numerize_ratio else s
-        dummies = pd.get_dummies(df_arg[col].fillna('').map(otherisation), prefix='splot_'+col, dummy_na=True)
-        x_result = pd.concat([x_result, dummies], axis=1)
-    for col in date_cols:
+        dummies = pd.get_dummies(df_arg[col].fillna('').map(otherisation), prefix='splot_'+col,
+                                 dummy_na=True).astype('int8')
+        dummies_tmp.append(dummies)
+    for col in tqdm(date_cols, disable=numerize_tqdm, desc='date_cols_ymd'):
         x_result[col+'_ho'] = df_arg[col].map(lambda d: d.hour)
         x_result[col+'_ho_sl'] = df_arg[col].map(lambda d: int(d.hour <= numerize_time_window[0]))
         x_result[col+'_ho_mo'] = df_arg[col].map(lambda d: int((d.hour <= numerize_time_window[1]) &
@@ -63,10 +68,11 @@ def treat_dataframe(df_arg, num_cols, date_cols, todummy_cols, toother_cols, **n
         x_result[col+'_wd'] = df_arg[col].map(lambda d: d.weekday())
         x_result[col+'_mt'] = df_arg[col].map(lambda d: d.month)
         x_result[col+'_yr'] = df_arg[col].map(lambda d: d.year)
-    for c1 in date_cols:
+    for c1 in tqdm(date_cols, disable=numerize_tqdm, desc='date_cols_ts'):
         x_result[c1+'_timestamp'] = x_result[c1+'_timestamp'] = \
             (df_arg[c1].map(lambda d: (d - np.datetime64('2000-01-01T00:00:00Z')) / np.timedelta64(1, 's')))
         for c2 in date_cols:
             if c1 > c2:
                 x_result[c1+'_'+c2+'_timediff'] = (df_arg[c1] - df_arg[c2])/np.timedelta64(1, 'm')
-    return pd.concat([df_arg[num_cols], x_result], axis=1)
+    all_dummies = pd.concat(dummies_tmp, axis=1)
+    return pd.concat([df_arg[num_cols], x_result, all_dummies], axis=1)

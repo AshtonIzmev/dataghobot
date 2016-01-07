@@ -1,6 +1,7 @@
 # Project related files
 data/
 notebooks/*
+notebooks
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

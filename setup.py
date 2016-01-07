@@ -8,5 +8,5 @@ setup(name='dataghobot',
       version='0.1.0',
       description='Dataghobot ersatz (Hyperparametrization, Feature transformation and generation)',
       url='https://github.com/AshtonIzmev/dataghobot',
-      install_requires=['scikit-learn', 'pandas', 'hyperopt', 'keras', 'pymongo', 'xgboost'],
+      install_requires=['scikit-learn', 'pandas', 'hyperopt', 'keras', 'pymongo', 'xgboost', 'tqdm'],
       zip_safe=False)
