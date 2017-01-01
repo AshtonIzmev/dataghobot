@@ -85,8 +85,7 @@ def stack_that(x_train, y_train, x_test, train_idx, stack_idx, rfparams, extpara
 
 def meta_stack_that(x_train, y_train, x_test, train_idx, stack_idx, rfparams, extparams, xgbparams):
 
-    pca = PCA(n_components=20)
-    #tsne = TSNE(n_components=2)
+    pca = PCA(n_components=10)
     kmeans = KMeans(n_clusters=3)
 
     x_train_train = x_train.iloc[train_idx]
@@ -94,14 +93,14 @@ def meta_stack_that(x_train, y_train, x_test, train_idx, stack_idx, rfparams, ex
     x_train_stack = x_train.iloc[stack_idx]
     y_train_stack = y_train.iloc[stack_idx]
 
-    logging.info(" >>> DGH >>> kmean-tsne-pca") #tsne.fit_transform
+    logging.info(" >>> DGH >>> kmean-pca")
     x_train_stack_cls = kmeans.fit_predict((pca.fit_transform(x_train_stack)))
     x_test_stack_cls = kmeans.predict((pca.transform(x_test)))
 
     x_cls_stack = pd.get_dummies(x_train_stack_cls, prefix='cls').reset_index(drop=True)
     x_cls_test = pd.get_dummies(x_test_stack_cls, prefix='cls').reset_index(drop=True)
 
-    logging.info(" >>> DGH >>> kmean-tsne-pca  =>  prediction")
+    logging.info(" >>> DGH >>> kmean-pca  =>  prediction")
     xgbopt = XGBOpt.XGBOpt(x_train_train, y_train_train)
     y_pred_stack_1, y_pred_test_1 = predict_opt_clf(xgbopt, xgbparams, x_train_stack, x_test)
 
@@ -111,7 +110,7 @@ def meta_stack_that(x_train, y_train, x_test, train_idx, stack_idx, rfparams, ex
     skopt = SklearnOpt.SklearnOpt(x_train_train, y_train_train)
     y_pred_stack_3, y_pred_test_3 = predict_opt_clf(skopt, extparams, x_train_stack, x_test)
 
-    logging.info(" >>> DGH >>> kmean-tsne-pca  =>  prediction  =>  stacking")
+    logging.info(" >>> DGH >>> kmean-pca  =>  prediction  =>  stacking")
     x_pred_stack = pd.DataFrame(np.transpose(np.array([y_pred_stack_1, y_pred_stack_2, y_pred_stack_3])))
     x_pred_test = pd.DataFrame(np.transpose(np.array([y_pred_test_1, y_pred_test_2, y_pred_test_3])))
 

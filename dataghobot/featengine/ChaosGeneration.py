@@ -78,7 +78,7 @@ def get_num_cols(df):
     return [c for c in df.columns if df[c].dtype.name.startswith('int') or df[c].dtype.name.startswith('float')]
 
 
-def chaos_feature_importance(x_feat, y_feat, shadow_selector, feat_dic={}, **chaos_args):
+def chaos_feature_importance(x_all, y_feat, shadow_selector, feat_dic={}, **chaos_args):
 
     chaos_feat_iter = chaos_args.get('chaos_feat_iter', 10)
     chaos_n_estimators = chaos_args.get('chaos_n_estimators', 10)
@@ -86,19 +86,18 @@ def chaos_feature_importance(x_feat, y_feat, shadow_selector, feat_dic={}, **cha
     chaos_gen_iter = chaos_args.get('chaos_gen_iter', 20)
     chaos_dummy_max = chaos_args.get('chaos_dummy_max', 20)
 
-    ori_numcols = x_feat.columns
+    ori_numcols = x_all.columns
     sel_numcols = []
     for j in range(chaos_feat_iter):
-        x_feat = x_feat[list(set(ori_numcols) | set(sel_numcols))]
+        x_all = x_all[list(set(ori_numcols) | set(sel_numcols))]
         clf = ensemble.ExtraTreesClassifier(n_estimators=chaos_n_estimators, n_jobs=-1)
-        numcols = get_num_cols(x_feat)
-        catcols = [c for c in x_feat.columns if x_feat[c].dtype.name == 'object']
-        chaos_gen(x_feat, numcols, catcols, gen_iter=chaos_gen_iter, dummy_max=chaos_dummy_max)
-        numcol2 = get_num_cols(x_feat)
-        x_feat_sel = x_feat[shadow_selector][numcol2]
-        y_feat_sel = y_feat
-        clf.fit(x_feat_sel.replace(np.inf, 0).replace(-np.inf, 0).fillna(-1), y_feat_sel)
-        for f, v in get_clf_feat(clf, x_feat, nb_feat=chaos_nb_features):
+        numcols = get_num_cols(x_all)
+        catcols = [c for c in x_all.columns if x_all[c].dtype.name == 'object']
+        chaos_gen(x_all, numcols, catcols, gen_iter=chaos_gen_iter, dummy_max=chaos_dummy_max)
+        numcol2 = get_num_cols(x_all)
+        x_feat = x_all[shadow_selector][numcol2]
+        clf.fit(x_feat.replace(np.inf, 0).replace(-np.inf, 0).fillna(-1), y_feat)
+        for f, v in get_clf_feat(clf, x_all, nb_feat=chaos_nb_features):
             sel_numcols.append(f)
             if f in feat_dic:
                 feat_dic[f] += v

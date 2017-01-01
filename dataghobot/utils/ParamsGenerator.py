@@ -3,7 +3,7 @@ from dataghobot.hyperopt import HyperoptParam
 
 def generate_all_params(feat_iter=10, n_estim=10, nb_feat=30, gen_iter=20, dumm_max=20,
                         cv_feat=6, cv_hopt=6, cv_stack=5, auto_max=2, rand_st=42,
-                        enhance_n_estim= 32, enchance_num_round=30):
+                        enhance_n_estim=32, enchance_num_round=30):
     return {
         'numerize_nb_dummy_max': 10,
         'numerize_entropy_max': 3,

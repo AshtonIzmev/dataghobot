@@ -13,25 +13,24 @@ class KerasOpt(Gopt):
     @staticmethod
     def build_keras_model(params_arg, x_shape1):
         model = Sequential()
-        model.add(Dropout(params_arg["input_dropout"]))
+        #model.add(Dense(params_arg['hidden_layers'], input_dim=x_shape1))
+        #model.add(Dropout(params_arg["input_dropout"]))
         first = True
         hidden_layers = params_arg['hidden_layers']
+        hidden_units = params_arg["hidden_units"]
         while hidden_layers > 0:
             if first:
                 dim = x_shape1
                 first = False
             else:
-                dim = params_arg["hidden_units"]
-            model.add(Dense(dim, params_arg["hidden_units"], init='glorot_uniform'))
+                dim = hidden_units
+            model.add(Dense(hidden_units, input_dim=dim))
             if params_arg["batch_norm"]:
-                model.add(BatchNormalization((params_arg["hidden_units"],)))
-            if params_arg["hidden_activation"] == "prelu":
-                model.add(PReLU((params_arg["hidden_units"],)))
-            else:
-                model.add(Activation(params_arg['hidden_activation']))
+                model.add(BatchNormalization((hidden_units,)))
+            model.add(Activation(params_arg['hidden_activation']))
             model.add(Dropout(params_arg["hidden_dropout"]))
             hidden_layers -= 1
-        model.add(Dense(params_arg["hidden_units"], 1, init='glorot_uniform'))
+        model.add(Dense(1, input_dim=hidden_units))
         model.add(Activation('linear'))
         model.compile(loss=params_arg['loss_function'], optimizer="adam")
         return model

@@ -114,22 +114,21 @@ def tiny_robot(x_train, y_train, x_valid, rf_rp, ext_rp, xgb_rp, **robot_kwargs)
     logging.info(" >>> DGH >>> Cross-val-stacking")
     for train1_idx, stack_idx in tqdm(KFold(len(x_train_num), n_folds=robot_cv_stack, shuffle=True),
                                       nested=True, desc='cv2'):
-        y_probas = Cvs.meta_stack_that(x_train_num, y_train, x_valid_num, train1_idx, stack_idx,
+        y_probas = Cvs.stack_that(x_train_num, y_train, x_valid_num, train1_idx, stack_idx,
                                   rf_rp, ext_rp, xgb_rp)
         stack_res.append(y_probas)
-    res.append(stack_res)
-
-    nb_auto += 1
-    if nb_auto == robot_nb_auto_max:
-        return res
+        nb_auto += 1
+        if nb_auto == robot_nb_auto_max:
+            return res
+        res.append(stack_res)
     return res
 
 
-def chaosize(x_feat, x_train1, x_valid, y_feat, **chaos_args):
+def chaosize(x_feat, x_mirror, x_valid, y_feat, **chaos_args):
     x_feat.loc[:, 'source'] = 0
-    x_train1.loc[:, 'source'] = 1
+    x_mirror.loc[:, 'source'] = 1
     x_valid.loc[:, 'source'] = 2
-    x_all = pd.concat([x_feat, x_train1, x_valid])
+    x_all = pd.concat([x_feat, x_mirror, x_valid])
     Cg.chaos_feature_importance(x_all, y_feat, x_all['source'] == 0, **chaos_args)
     x_train_res = x_all[x_all['source'] == 1].drop(['source'], axis=1)
     x_valid_res = x_all[x_all['source'] == 2].drop(['source'], axis=1)

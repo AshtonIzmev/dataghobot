@@ -1,7 +1,8 @@
-from dataghobot.utils import DataGenerator
-from dataghobot.models import SklearnOpt, XGBOpt, KerasOpt
-from dataghobot.hyperopt import HyperoptParam
 import unittest
+
+from dataghobot.hyperopt import HyperoptParam
+from dataghobot.models import SklearnOpt, XGBOpt, KerasOpt
+from dataghobot.utils import DataGenerator
 
 
 class OptimTestCase(unittest.TestCase):
@@ -101,7 +102,7 @@ class OptimTestCase(unittest.TestCase):
         param['eval_metric'] = 'auc'
         best = kerasopt.run_hp(param)
         self.assertIsNotNone(best)
-        self.assertLess(kerasopt.score, -0.95)
+        self.assertLess(kerasopt.score, -0.85)
 
 if __name__ == '__main__':
     unittest.main()
